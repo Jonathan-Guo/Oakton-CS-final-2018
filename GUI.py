@@ -8,9 +8,8 @@ b = 0.0
 def draw(event):
     global a
     global b
-    if a != 0 and b != 0:
-        canvas.create_oval(a, b, event.x, event.y, fill="black")
-        canvas.create_rectangle(a, b, event.x, event.y, fill="black")
+    if a != 0.0 and b != 0.0:
+        canvas.create_line(a, b, event.x, event.y, fill="black")
         a = event.x
         b = event.y
     else:
