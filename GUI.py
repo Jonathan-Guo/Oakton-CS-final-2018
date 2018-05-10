@@ -1,10 +1,21 @@
 from tkinter import *
 
 root = Tk()
+a = 0.0
+b = 0.0
 
 
 def draw(event):
-    canvas.create_oval(event.x, event.y, event.x+10, event.y+10, fill="black")
+    global a
+    global b
+    if a != 0 and b != 0:
+        canvas.create_oval(a, b, event.x, event.y, fill="black")
+        canvas.create_rectangle(a, b, event.x, event.y, fill="black")
+        a = event.x
+        b = event.y
+    else:
+        a = event.x
+        b = event.y
 
 
 canvas = Canvas(root, width=500, height=500)
