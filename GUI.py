@@ -1,27 +1,27 @@
 from tkinter import *
 
 root = Tk()
-a = 0.0
-b = 0.0
+xPos = 0.0
+yPos = 0.0
 
 
 def draw(event):
-    global a
-    global b
-    if a != 0.0 and b != 0.0:
-        canvas.create_line(a, b, event.x, event.y, fill="black")
-        a = event.x
-        b = event.y
+    global xPos
+    global yPos
+    if xPos != 0.0 and yPos != 0.0:
+        canvas.create_line(xPos, yPos, event.x, event.y, fill="black")
+        xPos = event.x
+        yPos = event.y
     else:
-        a = event.x
-        b = event.y
+        xPos = event.x
+        yPos = event.y
 
 
 def reset(event):
-    global a
-    global b
-    a = 0.0
-    b = 0.0
+    global xPos
+    global yPos
+    xPos = 0.0
+    yPos = 0.0
 
 
 canvas = Canvas(root, width=500, height=500)
