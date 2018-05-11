@@ -17,9 +17,16 @@ def draw(event):
         b = event.y
 
 
+def reset(event):
+    global a
+    global b
+    a = 0.0
+    b = 0.0
+
+
 canvas = Canvas(root, width=500, height=500)
 canvas.bind("<B1-Motion>", draw)
-
+canvas.bind("<ButtonRelease-1>", reset)
 canvas.create_rectangle(0, 0, 500, 500, fill='red')
 
 canvas.pack()
