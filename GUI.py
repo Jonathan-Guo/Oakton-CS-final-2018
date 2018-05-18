@@ -43,6 +43,10 @@ def draw(event):
         line_list[-1].append(Vertex(xPos, yPos))
 
 
+def draw_line(x, y):
+    canvas.create_line(x, y)
+
+
 def reset_draw(event):
     global xPos
     global yPos
@@ -65,11 +69,23 @@ def create_line_representation(event):
     line_list[-1].append(Vertex(event.x, event.y))
 
 
+def callback():
+    global concavityButton
+    global line_list
+    slopes = []
+    for x in line_list:
+        for y in line_list[x]:
+
+
+
 canvas = Canvas(root, width=500, height=500)
 canvas.bind("<B1-Motion>", draw)
 canvas.bind("<ButtonRelease-1>", reset_draw)
 canvas.bind("<Button-3>", create_start)
 canvas.create_rectangle(0, 0, 500, 500, fill='white')
 
+concavityButton = Button(root, text = "Find Concavity",command = callback())
+
 canvas.pack()
+concavityButton.pack()
 root.mainloop()
