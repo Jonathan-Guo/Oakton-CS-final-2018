@@ -56,11 +56,16 @@ def reset_draw(event):
 
 def create_start(event):
     global createStarting
+    global start
+    global stop
+
     if createStarting == 1.0:
         canvas.create_oval(event.x, event.y, event.x+10, event.y+10, fill="red")
+        start = Vertex(event.x, event.y)
         createStarting = 2.0
     elif createStarting == 2.0:
         canvas.create_oval(event.x, event.y, event.x+10, event.y+10, fill="green")
+        stop = Vertex(event.x, event.y)
         createStarting = 0.0
 
 
@@ -73,9 +78,8 @@ def callback():
     global concavityButton
     global line_list
     slopes = []
-    for x in line_list:
-        for y in line_list[x]:
-
+#     for x in line_list:
+#         for y in line_list[x]:
 
 
 canvas = Canvas(root, width=500, height=500)
@@ -84,6 +88,8 @@ canvas.bind("<ButtonRelease-1>", reset_draw)
 canvas.bind("<Button-3>", create_start)
 canvas.create_rectangle(0, 0, 500, 500, fill='white')
 
+start = Vertex(0, 0)
+stop = Vertex(0, 0)
 concavityButton = Button(root, text = "Find Concavity",command = callback())
 
 canvas.pack()
