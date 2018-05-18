@@ -1,5 +1,6 @@
 from tkinter import *
 
+#hello
 root = Tk()
 xPos = 0.0
 yPos = 0.0
@@ -78,8 +79,10 @@ def callback():
     global concavityButton
     global line_list
     slopes = []
-#     for x in line_list:
-#         for y in line_list[x]:
+    for x in line_list:
+        slopes = []
+        for y in line_list[x]:
+
 
 
 canvas = Canvas(root, width=500, height=500)
