@@ -9,8 +9,8 @@ line_list = [[]]
 
 
 class Vertex:
-    x = 0
-    y = 0
+    x = -1
+    y = -1
 
     def __init__(self, event_x, event_y):
         self.x = event_x
@@ -44,21 +44,24 @@ def draw(event):
         line_list[-1].append(Vertex(xPos, yPos))
 
 
-def draw_line(x, y):
-    canvas.create_line(x, y)
+def draw_line(x, y, x_2, y_2):
+    canvas.create_line(x, y, x_2, y_2)
 
 
 def reset_draw(event):
     global xPos
     global yPos
+    global line_list
     xPos = 0.0
     yPos = 0.0
+    print(line_list)
 
 
 def create_start(event):
     global createStarting
     global start
     global stop
+    global slope_path
 
     if createStarting == 1.0:
         canvas.create_oval(event.x, event.y, event.x+10, event.y+10, fill="red")
@@ -68,6 +71,7 @@ def create_start(event):
         canvas.create_oval(event.x, event.y, event.x+10, event.y+10, fill="green")
         stop = Vertex(event.x, event.y)
         createStarting = 0.0
+        slope_path = (stop.get_y() - start.get_y())/(stop.get_x() - start.get_x())
 
 
 def create_line_representation(event):
@@ -78,11 +82,32 @@ def create_line_representation(event):
 def callback():
     global concavityButton
     global line_list
+    global start
+    global stop
+    global slope_path
+    mark_1 = Vertex(-1, -1)
+    mark_2 = Vertex(-1, -1)
     slopes = []
-    for x in line_list:
+    for x in range(0, len(line_list)):
         slopes = []
-        for y in line_list[x]:
-
+        for i in range(1, len(line_list[x])):
+            print(line_list[x][i].get_y())
+            print(line_list[x][i-1].get_y())
+            print(line_list[x][i].get_x())
+            print(line_list[x][i-1].get_x())
+            slopes.append((line_list[x][i].get_y() - line_list[x][i-1].get_y())/(line_list[x][i].get_x() - line_list[x][i-1].get_x()))
+            print("hello")
+        if slope_path >= 0:
+            for slope in range(0, len(slopes)):
+                if (slopes[slope] <= slope_path) and (mark_1.get_x() == -1):
+                    mark_1 = line_list[x][slope]
+                elif slopes[slope] <= slope_path:
+                    mark_2 = line_list[x][slope]
+                    draw_line(mark_1.get_x(), mark_1.get_y(), mark_2.get_x(), mark_2.get_y())
+                    canvas.create_line(mark_1.get_x(), mark_1.get_y(), mark_2.get_x(), mark_2.get_y())
+                    print("hello world")
+                    mark_1 = Vertex(-1, -1)
+                    mark_2 = Vertex(-1, -1)
 
 
 canvas = Canvas(root, width=500, height=500)
@@ -93,7 +118,8 @@ canvas.create_rectangle(0, 0, 500, 500, fill='white')
 
 start = Vertex(0, 0)
 stop = Vertex(0, 0)
-concavityButton = Button(root, text = "Find Concavity",command = callback())
+slope_path = 0
+concavityButton = Button(root, text="Find Concavity", command=callback)
 
 canvas.pack()
 concavityButton.pack()
