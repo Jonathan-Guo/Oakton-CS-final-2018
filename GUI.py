@@ -38,6 +38,7 @@ def draw(event):
         canvas.create_line(xPos, yPos, event.x, event.y, fill="black")
         xPos = event.x
         yPos = event.y
+        canvas.create_oval(xPos, yPos, xPos + 3, yPos + 3, fill="yellow")
         line_list[-1].append(Vertex(xPos, yPos))
     else:
         xPos = event.x
@@ -56,6 +57,7 @@ def reset_draw(event):
     xPos = 0.0
     yPos = 0.0
     print(line_list)
+    print(len(line_list[0]))
 
 
 def create_start(event):
@@ -103,12 +105,12 @@ def path(start1, stop1):
         slope = (stop.get_y() - dy)/(stop.get_x() - dx)
     while current_mark != stop1:
         intersections = contains(x, y, dx, dy, slope)
-        if -1 < len(intersections) <= 1 and count != 0:
+        if len(intersections) == 1 and count != 0:
             print("hello")
-            angle -= 0.0005
-            dx = r * math.cos(angle)
-            dy = r * math.sin(angle)
-            intersections = contains(x, y, dx, dy, slope)
+            #angle -= 0.0005
+            #dx = r * math.cos(angle)
+            #dy = r * math.sin(angle)
+            #intersections = contains(x, y, dx, dy, slope)
             current_mark = intersections[0]
             marks.append(current_mark)
             x = current_mark.get_x()
