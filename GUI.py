@@ -1,6 +1,4 @@
 from tkinter import *
-import math
-
 #hello2
 root = Tk()
 xPos = 0.0
@@ -28,6 +26,18 @@ class Vertex:
 
     def set_y(self, event_y):
         self.x = event_y
+
+
+def get_line_list():
+    return line_list
+
+
+def get_start():
+    return start
+
+
+def get_stop():
+    return stop
 
 
 def draw(event):
@@ -64,18 +74,17 @@ def create_start(event):
     global createStarting
     global start
     global stop
-    global slope_path
+    global line_path
 
     if createStarting == 1.0:
-        canvas.create_oval(event.x, event.y, event.x+10, event.y+10, fill="red")
+        canvas.create_oval(event.x-5, event.y-5, event.x+5, event.y+5, fill="red", tag="point")
         start = Vertex(event.x, event.y)
         createStarting = 2.0
     elif createStarting == 2.0:
-        canvas.create_oval(event.x, event.y, event.x+10, event.y+10, fill="green")
+        canvas.create_oval(event.x-5, event.y-5, event.x+5, event.y+5, fill="green", tag="point")
         stop = Vertex(event.x, event.y)
         createStarting = 0.0
-        canvas.create_line(start.get_x(), start.get_y(), stop.get_x(), stop.get_y(), fill="orange")
-        slope_path = (stop.get_y() - start.get_y())/(stop.get_x() - start.get_x())
+        line_path = canvas.create_line(start.get_x(), start.get_y(), stop.get_x(), stop.get_y(), fill="orange", tag="line")
 
 
 def create_line_representation(event):
@@ -85,84 +94,7 @@ def create_line_representation(event):
 
 def callback():
     global start, stop
-    path(start, stop)
-
-
-def path(start1, stop1):
-    global line_list
-    marks = [start1]
-    current_mark = start1
-    x = current_mark.get_x()
-    y = current_mark.get_y()
-    dx = stop1.get_x() - current_mark.get_x()
-    dy = stop1.get_y() - current_mark.get_y()
-    r = math.sqrt(dx**2 + dy**2)
-    angle = math.atan(dy/dx)
-    count = 0
-    if stop.get_x() - dx == 0:
-        slope = 9999
-    else:
-        slope = (stop.get_y() - dy)/(stop.get_x() - dx)
-    while current_mark != stop1:
-        intersections = contains(x, y, dx, dy, slope)
-        if len(intersections) == 1 and count != 0:
-            print("hello")
-            #angle -= 0.0005
-            #dx = r * math.cos(angle)
-            #dy = r * math.sin(angle)
-            #intersections = contains(x, y, dx, dy, slope)
-            current_mark = intersections[0]
-            marks.append(current_mark)
-            x = current_mark.get_x()
-            y = current_mark.get_y()
-            dx = stop1.get_x() - current_mark.get_x()
-            dy = stop1.get_y() - current_mark.get_y()
-            r = math.sqrt(dx**2 + dy**2)
-            print(angle)
-            angle = math.atan(dy/dx)
-            print(angle)
-            count = 0
-        elif len(intersections) == 0 and count == 0:
-            current_mark = stop1
-            marks.append(stop1)
-            print("STOP")
-        else:
-            angle += 0.0001
-            print(math.degrees(angle))
-            dx = r * math.cos(angle)
-            #print(dx)
-            #print(dy)
-            dy = r * math.sin(angle)
-            count += 1
-        if stop.get_x() - dx == 0:
-            slope = 9999
-        else:
-            slope = (dy/dx)
-    for i in range(len(marks)-1):
-        draw_line(marks[i].get_x(), marks[i].get_y(),  marks[i+1].get_x(), marks[i+1].get_y())
-        print("olleh")
-    print(marks)
-
-
-def contains(x, y, dx, dy, m):
-    global line_list
-    intersections = []
-    b = y - m*x
-    for i in range(len(line_list)):
-        for j in range(len(line_list[i])):
-            if m != 9999 and m > 0:
-                if line_list[i][j].get_y() > line_list[i][j].get_x() * m + b and x < line_list[i][j].get_x() < dx and y < line_list[i][j].get_y() < dy:
-                    intersections.append(line_list[i][j])
-            elif m != 9999 and m < 0:
-                if line_list[i][j].get_y() > line_list[i][j].get_x() * m + b and dx < line_list[i][j].get_x() < x and y < line_list[i][j].get_y() < dy:
-                    intersections.append(line_list[i][j])
-            elif m == 9999 and m != 0:
-                if line_list[i][j] < x and y < line_list[i][j] < dy:
-                    intersections.append(line_list[i][j])
-            else:
-                if line_list[i][j] < y and x < line_list[i][j] < dx:
-                    intersections.append(line_list[i][j])
-    return intersections
+    #path(start, stop)
 
 
 canvas = Canvas(root, width=500, height=500)
@@ -173,8 +105,8 @@ canvas.create_rectangle(0, 0, 500, 500, fill='white')
 
 start = Vertex(0, 0)
 stop = Vertex(0, 0)
+line_path = 0
 button = Button(root, text="Path", command=callback)
-
 canvas.pack()
 button.pack()
 root.mainloop()
