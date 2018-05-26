@@ -1,10 +1,12 @@
 from tkinter import *
-#hello2
+#hello3
+#program start
 root = Tk()
 xPos = 0.0
 yPos = 0.0
 createStarting = 1.0
-line_list = [[]]
+grid_list = [[0 for i in range(125)] for j in range(125)]
+grid_elements = 0
 
 
 class Vertex:
@@ -28,10 +30,6 @@ class Vertex:
         self.x = event_y
 
 
-def get_line_list():
-    return line_list
-
-
 def get_start():
     return start
 
@@ -43,17 +41,13 @@ def get_stop():
 def draw(event):
     global xPos
     global yPos
-    global line_list
-    if xPos != 0.0 and yPos != 0.0:
-        canvas.create_line(xPos, yPos, event.x, event.y, fill="black")
-        xPos = event.x
-        yPos = event.y
-        canvas.create_oval(xPos, yPos, xPos + 3, yPos + 3, fill="yellow")
-        line_list[-1].append(Vertex(xPos, yPos))
-    else:
-        xPos = event.x
-        yPos = event.y
-        line_list[-1].append(Vertex(xPos, yPos))
+    global grid_elements
+    xPos = event.x//4
+    yPos = event.y//4
+    if grid_list[xPos][yPos] != 1:
+        grid_list[xPos][yPos] = 1
+        grid_elements += 1
+    canvas.create_rectangle(xPos * 4, yPos * 4, xPos * 4 + 4, yPos * 4 + 4, fill="black")
 
 
 def draw_line(x, y, x_2, y_2):
@@ -63,11 +57,9 @@ def draw_line(x, y, x_2, y_2):
 def reset_draw(event):
     global xPos
     global yPos
-    global line_list
     xPos = 0.0
     yPos = 0.0
-    print(line_list)
-    print(len(line_list[0]))
+    print(grid_elements)
 
 
 def create_start(event):
@@ -84,17 +76,19 @@ def create_start(event):
         canvas.create_oval(event.x-5, event.y-5, event.x+5, event.y+5, fill="green", tag="point")
         stop = Vertex(event.x, event.y)
         createStarting = 0.0
-        line_path = canvas.create_line(start.get_x(), start.get_y(), stop.get_x(), stop.get_y(), fill="orange", tag="line")
+        line_path = canvas.create_line(start.get_x(), start.get_y(), stop.get_x(), stop.get_y(), fill="orange")
 
 
-def create_line_representation(event):
-    global line_list
-    line_list[-1].append(Vertex(event.x, event.y))
-
-
-def callback():
+def dijkstra():
     global start, stop
-    #path(start, stop)
+
+
+def a_star():
+    global start, stop
+
+
+def JPS():
+    global start,stop
 
 
 canvas = Canvas(root, width=500, height=500)
@@ -102,11 +96,18 @@ canvas.bind("<B1-Motion>", draw)
 canvas.bind("<ButtonRelease-1>", reset_draw)
 canvas.bind("<Button-3>", create_start)
 canvas.create_rectangle(0, 0, 500, 500, fill='white')
-
+for i in range(125):
+    draw_line(i*4, 0, i*4, 500)
+for i in range(125):
+    draw_line(0, i*4, 500, i*4)
 start = Vertex(0, 0)
 stop = Vertex(0, 0)
 line_path = 0
-button = Button(root, text="Path", command=callback)
+dijkstras = Button(root, text="Dijkstra's", command=dijkstra)
+a_star_button = Button(root, text="A*", command=a_star)
+JPS_button = Button(root, text="JPS", command=JPS)
+dijkstras.pack(padx=5, pady=5, side=BOTTOM)
+a_star_button.pack(padx=10, pady=5, side=BOTTOM)
+JPS_button.pack(padx=15, pady=5, side=BOTTOM)
 canvas.pack()
-button.pack()
 root.mainloop()
