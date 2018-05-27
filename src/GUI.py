@@ -13,14 +13,10 @@ grid_elements = 0
 class Vertex:
     x = -1
     y = -1
-    g = 0
-    f = 0
 
-    def __init__(self, event_x, event_y, gvalue, fvalue):
+    def __init__(self, event_x, event_y ):
         self.x = event_x
         self.y = event_y
-        self.g = gvalue
-        self.f = fvalue
 
     def get_x(self):
         return self.x
@@ -28,23 +24,11 @@ class Vertex:
     def get_y(self):
         return self.y
 
-    def get_g(self):
-        return self.g
-
-    def get_f(self):
-        return self.f
-
     def set_x(self, event_x):
         self.x = event_x
 
     def set_y(self, event_y):
         self.x = event_y
-
-    def set_g(self, value):
-        self.g = value
-
-    def set_f(self, value):
-        self.f = value
 
 
 def get_start():
@@ -95,13 +79,13 @@ def create_start(event):
     pos_y = event.y//4
     if createStarting == 1.0:
         canvas.create_oval(pos_x*4-4, pos_y*4-4, pos_x*4 + 4, pos_y*4 + 4, fill="red")
-        start = Vertex(pos_x, pos_y, 0, 0)
+        start = Vertex(pos_x, pos_y)
         print(start.get_x())
         print(start.get_y())
         createStarting = 2.0
     elif createStarting == 2.0:
         canvas.create_oval(pos_x*4-4, pos_y*4-4, pos_x*4 + 4, pos_y*4 + 4, fill="green")
-        stop = Vertex(pos_x, pos_y, 0, 0)
+        stop = Vertex(pos_x, pos_y)
         createStarting = 0.0
         line_path = canvas.create_line(start.get_x()*4, start.get_y()*4, stop.get_x()*4, stop.get_y()*4, fill="orange")
 
@@ -113,9 +97,10 @@ def dijkstra():
 def a_star():
     global start, stop
     points = a_star_algo()
-    for i in range(len(points)-1):
-        draw_line(points[i].get_x()*4, points[i].get_y()*4, points[i+1].get_x()*4, points[i+1].get_y()*4)
-    draw_line(points[-1].get_x()*4, points[-1].get_y()*4, stop.get_x()*4, stop.get_y()*4)
+    for i in points:
+        canvas.create_rectangle(i.get_x()*4, i.get_y()*4, i.get_x()*4+4, i.get_y()*4+4, fill="orange")
+    canvas.create_oval(start.get_x()*4-4, start.get_y()*4-4, start.get_x()*4 + 4, start.get_y()*4 + 4, fill="red")
+    canvas.create_oval(stop.get_x()*4-4, stop.get_y()*4-4, stop.get_x()*4 + 4, stop.get_y()*4 + 4, fill="green")
 
 
 def a_star_algo():
@@ -124,47 +109,70 @@ def a_star_algo():
     def calc_h(x, y, end):
         return math.sqrt((x - end.get_x())**2 + (y - end.get_y())**2)
 
+    def neighbors(node):
+        global stop
+        neighbors_list = []
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                if grid_list[i+node.get_x()][j+node.get_y()] != 1 and \
+                        not(i == 0 and j == 0):
+                    if (i == -1 or i == 1) and (j == -1 or j == 1):
+                        neighbors_list.append(Vertex(i + node.get_x(), j + node.get_y()))
+                    else:
+                        neighbors_list.append(Vertex(i + node.get_x(), j + node.get_y()))
+        return neighbors_list
+
+    def contains(node1, set):
+        for all in set:
+            if node1.get_x() == all.get_x() and node1.get_y() == all.get_y():
+                return True
+        return False
+
+    def path(previous, current):
+        node_path = []
+        while current in previous.keys():
+            current = previous[current]
+            node_path.append(current)
+        return node_path
+
     open = set()
     closed = set()
-    current = Vertex(start.get_x(), start.get_y(), 0, 0)
+    current = Vertex(start.get_x(), start.get_y())
     open.add(current)
-    neighbor_f = 0
-    points = []
-
+    g_values = {current: 0}
+    f_values = {current: 0}
+    previous = {}
+    g_values[current] = 0
+    f_values[current] = calc_h(start.get_x(), start.get_y(), stop)
     while len(open) != 0:
         least_f = 9999
-        pop_node = None
-        open_contains = False
-        closed_contains = False
+        pop_node = 0
         for k in open:
-            if k.get_f() < least_f:
-                least_f = k.get_f()
+            if f_values[k] < least_f:
+                least_f = f_values[k]
                 pop_node = k
+        print(pop_node.get_x(), pop_node.get_y(), "pop_node")
         open.remove(pop_node)
-        print(pop_node)
-        print("hello")
-        for i in range(pop_node.get_x()-1, pop_node.get_x()+1):
-            for j in range(pop_node.get_y()-1, pop_node.get_y()+1):
-                if grid_list[i][j] != 1 and i != pop_node.get_x() and j != pop_node.get_y():
-                    if grid_list[i] == stop.get_x() and grid_list[j] == stop.get_y():
-                        return points
-                    neighbor_g = pop_node.get_g() + calc_h(i, j, pop_node)
-                    neighbor_h = calc_h(i, j, stop)
-                    neighbor_f = neighbor_g + neighbor_h
-                    for k in open:
-                        if k.get_x() == i and k.get_y() == j and k.get_f() < neighbor_f:
-                            open_contains = True
-                            print("skipped one")
-                    for k in closed:
-                        if k.get_x() == i and k.get_y() == j and k.get_f() < neighbor_f:
-                            closed_contains = True
-                            print("skipped two")
-                    if not open_contains and not closed_contains:
-                        open.add(Vertex(i, j, neighbor_g, neighbor_f))
-                        print("appended")
-                        points.append(Vertex(i, j, neighbor_g, neighbor_f))
         closed.add(pop_node)
-    return points
+        if pop_node.get_x() == stop.get_x() and pop_node.get_y() == stop.get_y():
+            return path(previous, pop_node)
+        for i in neighbors(pop_node):
+            canvas.create_rectangle(i.get_x()*4, i.get_y()*4, i.get_x()*4+4, i.get_y()*4+4, fill="cyan")
+            if contains(i, closed):
+                print("closed")
+                continue
+            if not contains(i, open):
+                open.add(i)
+                print(i.get_x(), i.get_y())
+                print("appended to open")
+            new_g = g_values[pop_node] + calc_h(i.get_x(), i.get_y(), pop_node)
+            if i in g_values:
+                if new_g > g_values[i]:
+                    print("greater g")
+                    continue
+            previous[i] = pop_node
+            g_values[i] = new_g
+            f_values[i] = g_values[i] + calc_h(i.get_x(), i.get_y(), stop)
 
 
 #note: this is jump point search
@@ -181,8 +189,8 @@ for i in range(125):
     draw_line(i*4, 0, i*4, 500)
 for i in range(125):
     draw_line(0, i*4, 500, i*4)
-start = Vertex(0, 0, 0, 0)
-stop = Vertex(0, 0, 0, 0)
+start = Vertex(0, 0)
+stop = Vertex(0, 0)
 line_path = 0
 frame = Frame(root)
 frame.pack(side=BOTTOM, expand=TRUE, fill=BOTH)
