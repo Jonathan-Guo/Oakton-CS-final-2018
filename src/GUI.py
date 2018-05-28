@@ -1,7 +1,5 @@
 from tkinter import *
 import math
-#hello3
-#program start
 root = Tk()
 xPos = 0.0
 yPos = 0.0
@@ -92,18 +90,23 @@ def create_start(event):
 
 def dijkstra():
     global start, stop
-
-
-def a_star():
-    global start, stop
-    points = a_star_algo()
+    points = a_star_algo(True)
     for i in points:
         canvas.create_rectangle(i.get_x()*4, i.get_y()*4, i.get_x()*4+4, i.get_y()*4+4, fill="orange")
     canvas.create_oval(start.get_x()*4-4, start.get_y()*4-4, start.get_x()*4 + 4, start.get_y()*4 + 4, fill="red")
     canvas.create_oval(stop.get_x()*4-4, stop.get_y()*4-4, stop.get_x()*4 + 4, stop.get_y()*4 + 4, fill="green")
 
 
-def a_star_algo():
+def a_star():
+    global start, stop
+    points = a_star_algo(False)
+    for i in points:
+        canvas.create_rectangle(i.get_x()*4, i.get_y()*4, i.get_x()*4+4, i.get_y()*4+4, fill="orange")
+    canvas.create_oval(start.get_x()*4-4, start.get_y()*4-4, start.get_x()*4 + 4, start.get_y()*4 + 4, fill="red")
+    canvas.create_oval(stop.get_x()*4-4, stop.get_y()*4-4, stop.get_x()*4 + 4, stop.get_y()*4 + 4, fill="green")
+
+
+def a_star_algo(dijkstra):
     global start, stop
 
     def calc_h(x, y, end):
@@ -165,19 +168,17 @@ def a_star_algo():
                 open.add(i)
                 print(i.get_x(), i.get_y())
                 print("appended to open")
-            new_g = g_values[pop_node] + calc_h(i.get_x(), i.get_y(), pop_node)
+                new_g = g_values[pop_node] + calc_h(i.get_x(), i.get_y(), pop_node)
             if i in g_values:
                 if new_g > g_values[i]:
                     print("greater g")
                     continue
             previous[i] = pop_node
             g_values[i] = new_g
-            f_values[i] = g_values[i] + calc_h(i.get_x(), i.get_y(), stop)
-
-
-#note: this is jump point search
-def JPS():
-    global start, stop
+            if not dijkstra:
+                f_values[i] = g_values[i] + calc_h(i.get_x(), i.get_y(), stop)
+            else:
+                f_values[i] = g_values[i]
 
 
 canvas = Canvas(root, width=500, height=500)
@@ -196,9 +197,7 @@ frame = Frame(root)
 frame.pack(side=BOTTOM, expand=TRUE, fill=BOTH)
 dijkstras = Button(frame, text="Dijkstra's", command=dijkstra)
 a_star_button = Button(frame, text="A*", command=a_star)
-JPS_button = Button(frame, text="JPS", command=JPS)
 dijkstras.pack(side=LEFT, expand=True)
 a_star_button.pack(side=LEFT, expand=True)
-JPS_button.pack(side=LEFT, expand=True)
 canvas.pack()
 root.mainloop()
